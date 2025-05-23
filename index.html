@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Memory Game</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    body {
+      background: #000;
+      font-family: 'Itim', cursive;
+      color: #fff;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+    }
+    .main-card {
+      margin-top: 10px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .game-board {
+      margin-top: 10px;
+      display: grid;
+      grid-template-columns: repeat(8, 40px);
+      grid-gap: 10px;
+      transform: scale(1);
+      transition: transform 1s ease;
+    }
+    .card {
+      font-family: Arial, sans-serif;
+      width: 40px;
+      height: 40px;
+      background-color: rgba(255,255,255,.5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: .5em;
+      border-radius: 8px;
+      transform: scale(0);
+      cursor: pointer;
+      transition: transform 0.3s;
+    }
+    .card.flipped {
+      font-size: 1.2em;
+      background-color: rgba(255,255,255,.3);
+      color: #2c3e50;
+      transition: all .5s ease;
+    }
+    .hideOut {
+      transform: scale(0) !important;
+      opacity: 0;
+      transition: all 0.7s ease !important;
+    }
+    .pesanAfter {
+      display: none;
+      font-size: 2em;
+      margin-top: 20px;
+      color: #e74c3c;
+    }
+    @keyframes appear {
+      to { transform: scale(1); }
+    }
+    .start-button {
+      padding: 10px 20px;
+      font-size: 1em;
+      margin-top: 20px;
+      cursor: pointer;
+      background-color: #3498db;
+      color: white;
+      border: none;
+      border-radius: 5px;
+    }
+    .win-message {
+      font-size: 1.3em;
+      color: #ffb6c1;
+      margin-top: 20px;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <div class="main-card">
+    <h1 style="font-size: 18px;">Try to finish<br><i style="color:pink">this Memory Game</i>!</h1>
+       <div class="game-board">
+     <div class="card" data-emoji="😀"></div><div class="card" data-emoji="😀"></div>
+  <div class="card" data-emoji="❤️"></div><div class="card" data-emoji="❤️"></div>
+  <div class="card" data-emoji="🥳"></div><div class="card" data-emoji="🥳"></div>
+  <div class="card" data-emoji="🙂"></div><div class="card" data-emoji="🙂"></div>
+  <div class="card" data-emoji="🤍"></div><div class="card" data-emoji="🤍"></div>
+  <div class="card" data-emoji="😍"></div><div class="card" data-emoji="😍"></div>
+  <div class="card" data-emoji="🥰"></div><div class="card" data-emoji="🥰"></div>
+  <div class="card" data-emoji="🤑"></div><div class="card" data-emoji="🤑"></div>
+  <div class="card" data-emoji="😎"></div><div class="card" data-emoji="😎"></div>
+  <div class="card" data-emoji="😇"></div><div class="card" data-emoji="😇"></div>
+  <div class="card" data-emoji="😜"></div><div class="card" data-emoji="😜"></div>
+  <div class="card" data-emoji="😱"></div><div class="card" data-emoji="😱"></div>
+  <div class="card" data-emoji="😏"></div><div class="card" data-emoji="😏"></div>
+  <div class="card" data-emoji="😡"></div><div class="card" data-emoji="😡"></div>
+  <div class="card" data-emoji="😴"></div><div class="card" data-emoji="😴"></div>
+  <div class="card" data-emoji="😻"></div><div class="card" data-emoji="😻"></div>
+  <div class="card" data-emoji="🤠"></div><div class="card" data-emoji="🤠"></div>
+  <div class="card" data-emoji="🤓"></div><div class="card" data-emoji="🤓"></div>
+  <div class="card" data-emoji="🦄"></div><div class="card" data-emoji="🦄"></div>
+  <div class="card" data-emoji="🐶"></div><div class="card" data-emoji="🐶"></div>
+  <div class="card" data-emoji="🐱"></div><div class="card" data-emoji="🐱"></div>
+  <div class="card" data-emoji="🐼"></div><div class="card" data-emoji="🐼"></div>
+  <div class="card" data-emoji="🐸"></div><div class="card" data-emoji="🐸"></div>
+  <div class="card" data-emoji="🐵"></div><div class="card" data-emoji="🐵"></div>
+  <div class="card" data-emoji="🦊"></div><div class="card" data-emoji="🦊"></div>
+  <div class="card" data-emoji="🐧"></div><div class="card" data-emoji="🐧"></div>
+  <div class="card" data-emoji="🐢"></div><div class="card" data-emoji="🐢"></div>
+  <div class="card" data-emoji="🐙"></div><div class="card" data-emoji="🐙"></div>
+  <div class="card" data-emoji="🦋"></div><div class="card" data-emoji="🦋"></div>
+  <div class="card" data-emoji="🌸"></div><div class="card" data-emoji="🌸"></div>
+  <div class="card" data-emoji="🍕"></div><div class="card" data-emoji="🍕"></div>
+  <div class="card" data-emoji="🍔"></div><div class="card" data-emoji="🍔"></div>
+
+</div>
+    <div class="win-message" id="winMessage" style="display:none;">
+      🎉 Congratulations! You matched all pairs! 🎉
+    </div>
+    <button class="start-button" id="restartBtn" style="display:none;">Restart</button>
+  </div>
+  <script>
+    const cards = document.querySelectorAll(".card");
+    const gameBoard = document.querySelector(".game-board");
+    const winMessage = document.getElementById("winMessage");
+    const restartBtn = document.getElementById("restartBtn");
+
+    let hasFlippedCard = false;
+    let lockBoard = false;
+    let firstCard, secondCard;
+    let matchedPairs = 0;
+
+    function startGame() {
+      matchedPairs = 0;
+      winMessage.style.display = "none";
+      restartBtn.style.display = "none";
+      cards.forEach(card => {
+        card.classList.remove("flipped");
+        card.textContent = "";
+        card.style.animation = "appear .9s forwards";
+        card.addEventListener("click", flipCard);
+      });
+      shuffle();
+    }
+
+    function flipCard() {
+      if (lockBoard) return;
+      if (this === firstCard) return;
+
+      this.classList.add("flipped");
+      this.textContent = this.dataset.emoji;
+
+      if (!hasFlippedCard) {
+        hasFlippedCard = true;
+        firstCard = this;
+        return;
+      }
+
+      secondCard = this;
+      checkForMatch();
+    }
+
+    function checkForMatch() {
+      let isMatch = firstCard.dataset.emoji === secondCard.dataset.emoji;
+      isMatch ? disableCards() : unflipCards();
+    }
+
+    function disableCards() {
+      firstCard.removeEventListener("click", flipCard);
+      secondCard.removeEventListener("click", flipCard);
+
+      matchedPairs++;
+      if (matchedPairs === 32) {
+        endGame();
+      }
+
+      resetBoard();
+    }
+
+    function unflipCards() {
+      lockBoard = true;
+
+      setTimeout(() => {
+        firstCard.classList.remove("flipped");
+        secondCard.classList.remove("flipped");
+        firstCard.textContent = "";
+        secondCard.textContent = "";
+
+        resetBoard();
+      }, 1000);
+    }
+
+    function resetBoard() {
+      [hasFlippedCard, lockBoard] = [false, false];
+      [firstCard, secondCard] = [null, null];
+    }
+
+    function endGame() {
+      setTimeout(() => {
+        winMessage.style.display = "block";
+        restartBtn.style.display = "inline-block";
+      }, 500);
+    }
+
+    function shuffle() {
+      cards.forEach(card => {
+        let randomPos = Math.floor(Math.random() * 16);
+        card.style.order = randomPos;
+      });
+    }
+
+    restartBtn.addEventListener("click", startGame);
+
+    // Start the game on load
+    window.onload = startGame;
+  </script>
+</body>
+</html>
